@@ -99,12 +99,12 @@ export default function Command() {
 
   const isFormValid = (values: UnipassRequestValues): boolean => {
     if (!values.name.trim() || !values.passcode.trim() || !values.phone.trim()) {
-      showToast(TOAST_MESSAGES.MISSING_FIELDS);
+      showToast({ ...TOAST_MESSAGES.MISSING_FIELDS, style: Toast.Style.Failure });
       return false;
     }
 
     if (!REGEX.PHONE_VALIDATION.test(values.phone.trim())) {
-      showToast(TOAST_MESSAGES.INVALID_PHONE);
+      showToast({ ...TOAST_MESSAGES.INVALID_PHONE, style: Toast.Style.Failure });
       return false;
     }
 
@@ -114,25 +114,26 @@ export default function Command() {
   const handleUnipassResponse = (data: UnipassResponse) => {
     const { persEcmQryRtnVo } = data;
     if (persEcmQryRtnVo?.tCnt?.[0] === "1") {
-      showToast(TOAST_MESSAGES.MATCH);
+      showToast({ ...TOAST_MESSAGES.MATCH, style: Toast.Style.Success });
     } else {
       const errorMessage =
         persEcmQryRtnVo?.persEcmQryRtnErrInfoVo?.[0]?.errMsgCn?.[0] ||
         persEcmQryRtnVo?.ntceInfo?.[0] ||
         TOAST_MESSAGES.ERROR.message;
-      showToast({ ...TOAST_MESSAGES.MISMATCH, message: errorMessage });
+      showToast({ ...TOAST_MESSAGES.MISMATCH, style: Toast.Style.Failure, message: errorMessage });
     }
   };
 
   const handleClearFields = () => {
     setFormValues({ name: "", passcode: "", phone: "" });
     setShouldExecute(false);
-    showToast(TOAST_MESSAGES.FIELDS_CLEARED);
+    showToast({ ...TOAST_MESSAGES.FIELDS_CLEARED, style: Toast.Style.Success });
   };
 
   if (error) {
     showToast({
       ...TOAST_MESSAGES.ERROR,
+      style: Toast.Style.Failure,
       message: error instanceof Error ? error.message : TOAST_MESSAGES.ERROR.message,
     });
   }
@@ -147,7 +148,7 @@ export default function Command() {
           <Action
             title="클립보드 내용 적용"
             onAction={parseClipboardContent}
-            shortcut={{ modifiers: ["cmd"], key: "t" }}
+            shortcut={{ modifiers: ["cmd", "shift"], key: "v" }}
           />
         </ActionPanel>
       }
